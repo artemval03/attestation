@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block scripts %}
+	<script src="{% static 'main.js' %}" defer></script>
+{% endblock scripts %}
+
+{% block title %}
+	home
+{% endblock title %}
+
+{% block content %}
+
+	<!-- Modal -->
+	<div class="modal fade" id="quizStartModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Начать?</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modal-body-confirm"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">нет</button>
+					<button type="button" id="start-button" class="btn btn-success">да</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<a style="float:right" href="{% url 'quizes:login_page' %}"> Вход </a>
+		<a style="float:right" href="{% url 'quizes:register_page' %}"> Регистрация </a>
+	</div>
+	<div class="h1">Тесты</div>
+	{% if request.user.is_authenticated %}
+		<hr>
+		<a style="float:right" href="{% url 'quizes:logout_page' %}">Выход</a>
+		{% for obj in object_list %}
+			<button
+					class="btn btn-link modal-button"
+					data-pk="{{ obj.pk }}"
+					data-quiz="{{ obj.name }}"
+					data-questions="{{ obj.number_of_questions }}"
+					data-difficulty="{{ obj.difficluty }}"
+					data-time="{{ obj.time }}"
+					data-pass="{{ obj.required_score_to_pass }}"
+					data-toggle="modal"
+					data-target="#quizStartModal">
+				{{ obj.name }}
+			</button><br>
+		{% endfor %}
+
+
+		<div class="teacher_list">
+			<h1>Преподаватели</h1>
+			{% for teacher in teachers %}
+				<div class="teacher_item">
+					<img src="{{ teacher.photo.url }}" alt="">
+					<h2>{{ teacher.fio }}</h2>
+					<h3>{{ teacher.subject }}</h3>
+				</div>
+			{% endfor %}
+		</div>
+
+		<div class="teacher_list">
+			<h1>Видео лекции</h1>
+			{% for video in videos %}
+				<div>
+					<h2>{{ video.name }}</h2>
+					<iframe width="560" height="315" src="{{ video.link }}"
+							title="YouTube video player" frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+				</div>
+			{% endfor %}
+		</div>
+
+		<div class="teacher_list">
+			<h1>Конспекты лекций</h1>
+			{% for file in files %}
+				<div class="teacher_item">
+					<h2>{{ file.name }}</h2>
+					<h2>
+						<a href="/media/{{ file.file }}">Cкачать лекцию</a>
+					</h2>
+				</div>
+			{% endfor %}
+		</div>
+	{% else %}
+		<p>Чтобы пройти тесты, нужно <a href="{% url 'quizes:login_page' %}"> войти </a> или <a
+				href="{% url 'quizes:register_page' %}"> зарегистрироваться </a></p>
+	{% endif %}
+
+
+{% endblock content %}
